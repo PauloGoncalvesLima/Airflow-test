@@ -36,7 +36,7 @@ class ProposalsHook(ComponentBaseHook):
         -------
             dict[str, str]: Information about the Decidim component.
         """
-        update_date_filter: datetime = kwargs.get("update_date_filter", None)
+        update_date_filter: datetime = kwargs.get("update_date_filter")
         graphql_query = self.graphql.get_graphql_query_from_file(
             Path(__file__).parent.joinpath(
                 "../gql/proposals/get_proposals_by_component_id_without_filter_date.gql"
