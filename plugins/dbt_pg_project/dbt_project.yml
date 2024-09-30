@@ -19,7 +19,7 @@ models:
   dbt_pg_project:
     1.silver:
       +schema: silver
-      +materialized: view
+      +materialized: table
     2.gold:
       +schema: gold
       +materialized: table
