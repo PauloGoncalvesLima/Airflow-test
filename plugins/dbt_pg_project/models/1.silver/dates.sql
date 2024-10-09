@@ -31,7 +31,7 @@ dates AS (
 )
 
 SELECT 
-             to_date(d.year_month_day, 'YYYYMMDD') as day
+             to_date(d.year_month_day, 'YYYYMMDD') as date_day
             ,d.year_month_day
             ,d.year_month
             ,d.year
