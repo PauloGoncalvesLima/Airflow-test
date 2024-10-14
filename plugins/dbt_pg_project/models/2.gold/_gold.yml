@@ -56,6 +56,59 @@ models:
         tests:
           - not_null
 
+  - name: visits_metrics
+    description: "Métricas de visitas, incluindo contagem de visitantes, contagem de usuários e tempo médio de visita em minutos por dia."
+    columns:
+      - name: date_day
+        description: "Data da visita ou do cadastro do usuário."
+        tests:
+          - not_null
+          - unique
+
+      - name: visitor_count
+        description: "Contagem de visitantes únicos por dia."
+        tests:
+          - not_null
+
+      - name: user_count
+        description: "Contagem de novos usuários registrados por dia."
+        tests:
+          - not_null
+
+      - name: visit_time_spend_in_minutes
+        description: "Tempo médio de permanência dos visitantes no site, em minutos."
+        tests:
+          - not_null
+
+  - name: device_entry_channel
+    description: "Métricas relacionadas às visitas de usuários, incluindo duração total da visita, canal de entrada, tipo de dispositivo, contagem de visitantes únicos e tempo médio de visita em minutos por dia."
+    columns:
+      - name: day
+        description: "Data da visita."
+        tests:
+          - not_null
+
+      - name: entry_channel
+        description: "Tipo de canal de entrada pelo qual o visitante acessou o site (ex: direto, referência)."
+        tests:
+          - not_null
+
+      - name: device
+        description: "Tipo de dispositivo utilizado pelo visitante (ex: celular, desktop)."
+        tests:
+          - not_null
+
+      - name: unique_visitors
+        description: "Contagem de visitantes únicos por dia, canal de entrada e dispositivo."
+        tests:
+          - not_null
+
+      - name: avg_visit_time_in_minutes
+        description: "Tempo médio gasto no site pelos visitantes, em minutos."
+        tests:
+          - not_null
+
+
 # Testes adicionais para garantir integridade e qualidade dos dados
 tests:
   - name: unique_proposal_per_day
