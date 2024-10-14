@@ -9,6 +9,8 @@ from airflow.decorators import dag, task
 from airflow.operators.empty import EmptyOperator
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 
+from plugins.telegram.callbacks import send_telegram
+
 default_args = {
     "owner": "Amoêdo",
 }
@@ -54,6 +56,8 @@ TABLE_HOLIDAYS_NAME = "holidays"
     catchup=False,
     tags=["data-ingestion"],
     default_args=default_args,
+    on_success_callback=None,
+    on_failure_callback=send_telegram,
 )
 def dates_holidays():
 
