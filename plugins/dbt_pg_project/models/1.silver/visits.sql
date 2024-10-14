@@ -23,7 +23,7 @@ FROM      (
                               mdv."visitIp"                  AS visit_ip,
                               mdv."visitorId"                AS visitor_id,
                               mdv."goalConversions"          AS goal_conversions,
-                              mdv."serverDate"               AS session_date,
+                              mdv."serverDate"::DATE         AS session_date,
                               mdv."visitServerHour"          AS visit_server_hour,
                               mdv."lastActionTimestamp"      AS last_action_timestamp,
                               mdv."lastActionDateTime"       AS last_action_date_time,
