@@ -29,9 +29,11 @@ default:
     - pip install -r requirements.testing.txt  # Install testing dependencies
 
 .default_rule_python: &default_rule_python
-  only:
-    - merge_requests
-    - branches
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      changes:
+        - ./**/*.py
 
 .default_pytest: &default_pytest
   <<: *default_rule_python
@@ -76,7 +78,7 @@ lint-markdown:
     default: false
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-    - changes:
+      changes:
         - ./**/*.md
   variables:
     SHOW_ERRORS: "true"
