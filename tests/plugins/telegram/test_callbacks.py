@@ -24,7 +24,7 @@ def test_send_telegram(mock_context, mock_telegram_hook):
 
     send_telegram(mock_context)
 
-    mock_telegram_hook.assert_called_once_with("airflow-telegram-moderation")
+    mock_telegram_hook.assert_called_once_with("airflow-telegram-monitoring")
     mock_hook_instance.send_message.assert_called_once_with(
         api_params={
             "text": f"""
@@ -47,4 +47,4 @@ def test_send_telegram_hook_exception(mock_telegram_hook, mock_context):
         send_telegram(mock_context)
 
     # Assert that TelegramHook is called
-    mock_telegram_hook.assert_called_once_with("airflow-telegram-moderation")
+    mock_telegram_hook.assert_called_once_with("airflow-telegram-monitoring")
