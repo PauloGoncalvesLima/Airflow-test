@@ -2,10 +2,10 @@ stages:
   - lint
   - tests
   - sonarcloud
-  - deploy pages
   - compile_dbt
   - generate_dbt_dag
   - commit_dbt_dag
+  - deploy
 
 variables:
   SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
@@ -21,50 +21,35 @@ variables:
 # <------------- Defining Anchors ------------->
 
 default:
-  image: python:3.10-slim
+  image:
+    name: registry.gitlab.com/lappis-unb/decidimbr/servicos-de-dados/airflow-docker/main:latest
+    entrypoint: [""]
   retry: 0
   before_script:
     - python -m pip install --upgrade pip setuptools wheel  # Upgrade pip and related tools
     - pip install -r requirements.txt  # Install dependencies
     - pip install -r requirements.testing.txt  # Install testing dependencies
 
-.default_rule_python: &default_rule_python
-  only:
-    - merge_requests
-    - branches
+# <------------- Linters ------------->
 
-.default_pytest: &default_pytest
-  <<: *default_rule_python
-  script:
-    - pytest . --junitxml=pytest_report.xml
-  coverage: '/^TOTAL.+?(\d+\%)$/'
-  artifacts:
-    when: always
-    paths:
-      - pytest_report.xml
-    reports:
-      junit: pytest_report.xml
-
-.setup_dbt: &setup_dbt
-  before_script:
-    - apt-get update
-    - apt-get install -y wireguard iproute2
-    - echo -e "[Interface]\nAddress = 192.168.200.10/32\nSaveConfig = true\nListenPort = 51760\nPrivateKey = $WIREGUARD_PRIVATE_KEY\n\n[Peer]\nPublicKey = $WIREGUARD_PEER_KEY\nAllowedIPs = 192.168.3.0/27\nEndpoint = 200.152.47.48:51820\nPersistentKeepalive = 15\n" > /etc/wireguard/wg0.conf
-    - wg-quick up wg0
-    - pip install dbt-postgres
-
-# # <------------- Linters ------------->
+.default_lint_rule_python: &default_lint_rule_python
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      changes:
+          compare_to: 'refs/heads/main'
+          paths:
+            - '**/*.py'
 
 lint-ruff:
   stage: lint
-  <<: *default_rule_python
+  <<: *default_lint_rule_python
   script:
     - pip install ruff  # Ensure ruff is installed
     - ruff check .
 
 lint-black:
   stage: lint
-  <<: *default_rule_python
+  <<: *default_lint_rule_python
   script:
     - pip install black
     - black . --check --verbose --color
@@ -76,8 +61,10 @@ lint-markdown:
     default: false
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-    - changes:
-        - ./**/*.md
+      changes:
+          compare_to: 'refs/heads/main'
+          paths:
+            - '**/*.md'
   variables:
     SHOW_ERRORS: "true"
   script:
@@ -91,19 +78,36 @@ lint-markdown:
 
 # <------------- Testing ------------->
 
-pytest-3.9:
-  stage: tests
-  image: python:3.9-slim
-  <<: *default_pytest
+.default_pytest: &default_pytest
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main' && $GITLAB_USER_ID == '21473585'
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      changes:
+          compare_to: 'refs/heads/main'
+          paths:
+            - '**/*.py'
+  script:
+    - pytest . --junitxml=pytest_report.xml
+  coverage: '/^TOTAL.+?(\d+\%)$/'
+  artifacts:
+    when: always
+    paths:
+      - pytest_report.xml
+    reports:
+      junit: pytest_report.xml
 
-pytest-3.10:
-  stage: tests
-  image: python:3.10-slim
-  <<: *default_pytest
+# pytest-3.9:
+#   stage: tests
+#   image: python:3.9-slim
+#   <<: *default_pytest
 
-pytest-3.11:
+# pytest-3.10:
+#   stage: tests
+#   image: python:3.10-slim
+#   <<: *default_pytest
+
+pytest:
   stage: tests
-  image: python:3.11-slim
   <<: *default_pytest
 
 # <------------- QA ------------->
@@ -113,29 +117,42 @@ sonarcloud-check:
   image:
     name: sonarsource/sonar-scanner-cli:latest
     entrypoint: [""]
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main' && $GITLAB_USER_ID == '21473585'
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
   inherit:
     default: false
   dependencies:
-    - pytest-3.9
-    - pytest-3.10
-    - pytest-3.11
+    - pytest
   cache:
     key: "${CI_JOB_NAME}"
     paths:
       - .sonar/cache
   script:
     - sonar-scanner -X
-  only:
-    - merge_requests
-    - main
-    - development
+
 
 
 # <------------- Generate dbt DAG ------------->
+
+.default_rule_dbt: &default_rule_dbt
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main' && $GITLAB_USER_ID != '21473585'
+
+
+.setup_dbt: &setup_dbt
+  before_script:
+    - apk add --no-cache wireguard-tools-wg-quick iptables iproute2
+    - mkdir -p /etc/wireguard
+    - echo -e "[Interface]\nAddress = 192.168.200.10/32\nSaveConfig = true\nListenPort = 51760\nPrivateKey = $WIREGUARD_PRIVATE_KEY\n\n[Peer]\nPublicKey = $WIREGUARD_PEER_KEY\nAllowedIPs = 192.168.3.0/27\nEndpoint = 200.152.47.48:51820\nPersistentKeepalive = 15\n" > /etc/wireguard/wg0.conf
+    - wg-quick up wg0
+    - pip install dbt-postgres
+
 compile_dbt_project:
   stage: compile_dbt
-  image: python:3.9
+  image: python:3.10-alpine3.20
   <<: *setup_dbt
+  <<: *default_rule_dbt
   inherit:
     default: false
   script:
@@ -146,17 +163,43 @@ compile_dbt_project:
   artifacts:
     paths:
       - $DBT_PROJECT_DIR/target/manifest.json
-  only:
-    - main
-    - development
+
+process_manifest:
+  stage: generate_dbt_dag
+  image: python:3.10-alpine3.20
+  <<: *default_rule_dbt
+  inherit:
+    default: false
+  script:
+    - python $PYTHON_SCRIPT --manifest_path $DBT_PROJECT_DIR/target/manifest.json --project_path $AIRFLOW_DBT_PROJECT_DIR --profile_path $AIRFLOW_DBT_PROFILE_DIR --dag_folder_path dbt/
+  artifacts:
+    paths:
+      - dbt/*.py
+
+commit_generated_file:
+  stage: commit_dbt_dag
+  image: python:3.10-alpine3.20
+  <<: *default_rule_dbt
+  inherit:
+    default: false
+  script:
+    - apk add --no-cache git rsync
+    - git config --global user.email "$GIT_CI_EMAIL"
+    - git config --global user.name "$GIT_CI_USER"
+    - git checkout $CI_COMMIT_REF_NAME
+    - rsync -a --delete dbt/ $DAG_REPO_PATH/dbt/
+    - date +%Y-%m-%d\ %H:%M:%S > $DAG_REPO_PATH/dbt/.last_execution # To make sure that will be at least a new commit, so the next part of the pipeline runs
+    - git add $DAG_REPO_PATH
+    - git diff-index --quiet HEAD || (git commit -m "automation(dbt_dag) Add airflow DAG from dbt manifest" && git push https://dbtAutomation:$CI_JOB_TOKEN@gitlab.com/lappis-unb/decidimbr/servicos-de-dados/airflow-dags.git $CI_COMMIT_REF_NAME)
 
 pages:
-  image: python:3.9
-  stage: deploy pages
+  image: python:3.10-alpine3.20
+  stage: deploy
+  inherit:
+    default: false
   <<: *setup_dbt
-  only:
-    refs:
-      - main
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main' && $GITLAB_USER_ID == '21473585'
   script:
     - cd $DBT_PROJECT_DIR
     - dbt deps
@@ -166,31 +209,3 @@ pages:
   artifacts:
     paths:
       - public
-
-process_manifest:
-  stage: generate_dbt_dag
-  image: python:3.9
-  script:
-    - python $PYTHON_SCRIPT --manifest_path $DBT_PROJECT_DIR/target/manifest.json --project_path $AIRFLOW_DBT_PROJECT_DIR --profile_path $AIRFLOW_DBT_PROFILE_DIR --dag_folder_path dbt/
-  artifacts:
-    paths:
-      - dbt/*.py
-  only:
-    - main
-    - development
-
-commit_generated_file:
-  stage: commit_dbt_dag
-  image: python:3.9
-  script:
-    - git config --global user.email "$GIT_CI_EMAIL"
-    - git config --global user.name "$GIT_CI_USER"
-    - git checkout $CI_COMMIT_REF_NAME
-    - apt-get update -y
-    - apt-get install -y rsync
-    - rsync -a --delete dbt/ $DAG_REPO_PATH/dbt/
-    - git add $DAG_REPO_PATH
-    - git diff-index --quiet HEAD || (git commit -m "automation(dbt_dag) Add airflow DAG from dbt manifest [ci skip]" && git push https://dbtAutomation:$CI_JOB_TOKEN@gitlab.com/lappis-unb/decidimbr/servicos-de-dados/airflow-dags.git $CI_COMMIT_REF_NAME)
-  only:
-    - main
-    - development
