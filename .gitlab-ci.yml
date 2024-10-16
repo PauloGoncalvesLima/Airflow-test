@@ -36,7 +36,9 @@ default:
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       changes:
-        - ./**/*.py
+          compare_to: 'refs/heads/main'
+          paths:
+            - '**/*.py'
 
 lint-ruff:
   stage: lint
@@ -60,7 +62,9 @@ lint-markdown:
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       changes:
-        - ./**/*.md
+          compare_to: 'refs/heads/main'
+          paths:
+            - '**/*.md'
   variables:
     SHOW_ERRORS: "true"
   script:
@@ -79,7 +83,10 @@ lint-markdown:
     - if: $CI_COMMIT_BRANCH == 'main' && $GITLAB_USER_ID == '21473585'
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       changes:
-        - ./**/*.py
+          compare_to: 'refs/heads/main'
+          paths:
+            - '**/*.py'
+
   script:
     - pytest . --junitxml=pytest_report.xml
   coverage: '/^TOTAL.+?(\d+\%)$/'
