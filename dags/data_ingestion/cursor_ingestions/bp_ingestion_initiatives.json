@@ -1,0 +1,45 @@
+{
+  "name": "bp_initiatives",
+  "origin_db_connection": "bp_replica",
+  "destination_db_connection": "pg_bp_analytics",
+  "catchup": false,
+  "start_date": "2024-08-10",
+  "schedule_interval": "0 6 * * *",
+  "extractions": {
+    "decidim_initiatives": {
+      "extraction_schema": "public",
+      "ingestion_type": "incremental",
+      "incremental_filter": "updated_at >= '{{ macros.ds_add(ds, -1) }}' and updated_at < '{{ macros.ds_add(ds, 2) }}'",
+      "destination_schema": "raw"
+    },
+    "decidim_initiatives_committee_members": {
+      "extraction_schema": "public",
+      "ingestion_type": "incremental",
+      "incremental_filter": "updated_at >= '{{ macros.ds_add(ds, -1) }}' and updated_at < '{{ macros.ds_add(ds, 2) }}'",
+      "destination_schema": "raw"
+    },
+    "decidim_initiatives_settings": {
+      "extraction_schema": "public",
+      "ingestion_type": "full_refresh",
+      "destination_schema": "raw"
+    },
+    "decidim_initiatives_type_scopes": {
+      "extraction_schema": "public",
+      "ingestion_type": "incremental",
+      "incremental_filter": "updated_at >= '{{ macros.ds_add(ds, -1) }}' and updated_at < '{{ macros.ds_add(ds, 2) }}'",
+      "destination_schema": "raw"
+    },
+    "decidim_initiatives_types": {
+      "extraction_schema": "public",
+      "ingestion_type": "incremental",
+      "incremental_filter": "updated_at >= '{{ macros.ds_add(ds, -1) }}' and updated_at < '{{ macros.ds_add(ds, 2) }}'",
+      "destination_schema": "raw"
+    },
+    "decidim_initiatives_votes": {
+      "extraction_schema": "public",
+      "ingestion_type": "incremental",
+      "incremental_filter": "updated_at >= '{{ macros.ds_add(ds, -1) }}' and updated_at < '{{ macros.ds_add(ds, 2) }}'",
+      "destination_schema": "raw"
+    }
+  }
+}
