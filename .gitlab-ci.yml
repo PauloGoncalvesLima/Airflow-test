@@ -186,6 +186,7 @@ commit_generated_file:
     - git checkout $CI_COMMIT_REF_NAME
     - apt-get update -y
     - apt-get install -y rsync
+    - date +%Y-%m-%d\ %H:%M:%S > $DAG_REPO_PATH/dbt/.last_execution # To make sure that will be at least a new commit, so the next part of the pipeline runs
     - rsync -a --delete dbt/ $DAG_REPO_PATH/dbt/
     - git add $DAG_REPO_PATH
     - git diff-index --quiet HEAD || (git commit -m "automation(dbt_dag) Add airflow DAG from dbt manifest" && git push https://dbtAutomation:$CI_JOB_TOKEN@gitlab.com/lappis-unb/decidimbr/servicos-de-dados/airflow-dags.git $CI_COMMIT_REF_NAME)
