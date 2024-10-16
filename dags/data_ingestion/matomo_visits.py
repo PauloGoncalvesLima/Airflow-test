@@ -13,6 +13,8 @@ from sqlalchemy import MetaData, Table
 from sqlalchemy.exc import NoSuchTableError
 from sqlalchemy.orm import sessionmaker
 
+from plugins.telegram.callbacks import send_telegram
+
 default_args = {"owner": "data", "retries": 0, "retry_delay": timedelta(minutes=10)}
 
 limit = 100
@@ -34,6 +36,8 @@ dataset = Dataset("bronze_matomo_detailed_visits")
     concurrency=1,
     max_active_runs=1,
     render_template_as_native_obj=True,
+    on_success_callback=None,
+    on_failure_callback=send_telegram,
 )
 def data_ingestion_matomo_detailed_visits():
     start = EmptyOperator(task_id="start")

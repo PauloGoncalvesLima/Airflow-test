@@ -8,6 +8,8 @@ from airflow.datasets import Dataset
 from airflow.decorators import dag
 from airflow.operators.python import PythonVirtualenvOperator
 
+from plugins.telegram.callbacks import send_telegram
+
 if TYPE_CHECKING:
     from sshtunnel import SSHTunnelForwarder
 
@@ -39,6 +41,8 @@ for entry in os.scandir(Path(__file__).parent.joinpath("./cursor_ingestions")):
         catchup=catchup,
         concurrency=1,
         render_template_as_native_obj=True,
+        on_success_callback=None,
+        on_failure_callback=send_telegram,
     )
     def data_ingestion_postgres(origin_db_connection, destination_db_connection):
         def extract_data(extraction, extraction_info, db_conn_id, ssh_tunnel: bool = False):

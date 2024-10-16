@@ -3,9 +3,9 @@ from airflow.providers.telegram.hooks.telegram import TelegramHook
 from plugins.telegram.decorators import telegram_retry
 
 
-@telegram_retry(max_retries=40)
+@telegram_retry(max_retries=10)
 def send_telegram(_context):
-    hook = TelegramHook("airflow-telegram-moderation")
+    hook = TelegramHook("airflow-telegram-monitoring")
     ti = _context["task_instance"]
 
     hook.send_message(
