@@ -11,6 +11,45 @@
       "ingestion_type": "incremental",
       "incremental_filter": "updated_at >= '{{ macros.ds_add(ds, -1) }}' and updated_at < '{{ macros.ds_add(ds, 2) }}'",
       "destination_schema": "raw"
-    }
+    },
+    "decidim_forms_answer_choices": {
+        "extraction_schema": "public",
+        "ingestion_type": "full_refresh",
+        "destination_schema": "raw"
+      },
+      "decidim_forms_answer_options": {
+        "extraction_schema": "public",
+        "ingestion_type": "full_refresh",
+        "destination_schema": "raw"
+      },
+      "decidim_forms_answers": {
+        "extraction_schema": "public",
+        "ingestion_type": "incremental",
+        "incremental_filter": "updated_at >= '{{ macros.ds_add(ds, -1) }}' and updated_at < '{{ macros.ds_add(ds, 2) }}'",
+        "destination_schema": "raw"
+      },
+      "decidim_forms_display_conditions": {
+        "extraction_schema": "public",
+        "ingestion_type": "incremental",
+        "incremental_filter": "updated_at >= '{{ macros.ds_add(ds, -1) }}' and updated_at < '{{ macros.ds_add(ds, 2) }}'",
+        "destination_schema": "raw"
+      },
+      "decidim_forms_question_matrix_rows": {
+        "extraction_schema": "public",
+        "ingestion_type": "full_refresh",
+        "destination_schema": "raw"
+      },
+      "decidim_forms_questionnaires": {
+        "extraction_schema": "public",
+        "ingestion_type": "incremental",
+        "incremental_filter": "updated_at >= '{{ macros.ds_add(ds, -1) }}' and updated_at < '{{ macros.ds_add(ds, 2) }}'",
+        "destination_schema": "raw"
+      },
+      "decidim_forms_questions": {
+        "extraction_schema": "public",
+        "ingestion_type": "incremental",
+        "incremental_filter": "updated_at >= '{{ macros.ds_add(ds, -1) }}' and updated_at < '{{ macros.ds_add(ds, 2) }}'",
+        "destination_schema": "raw"
+      }
   }
 }
