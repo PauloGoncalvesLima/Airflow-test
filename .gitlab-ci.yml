@@ -113,10 +113,8 @@ sonarcloud-check:
     name: sonarsource/sonar-scanner-cli:latest
     entrypoint: [""]
   rules:
-    - if: $CI_COMMIT_BRANCH == 'main' && $GITLAB_USER_ID == '21473585'
+    - if: $CI_COMMIT_BRANCH == 'main'
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-      changes:
-        - ./**/*.py
   inherit:
     default: false
   dependencies:
