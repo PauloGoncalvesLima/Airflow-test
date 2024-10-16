@@ -7,6 +7,7 @@ from airflow.models import Variable
 from airflow.operators.bash_operator import BashOperator
 from airflow.operators.empty import EmptyOperator
 from airflow.utils.dates import days_ago
+from plugins.telegram.callbacks import send_telegram
 
 from datetime import timedelta
 
@@ -23,7 +24,9 @@ with DAG(
     schedule=[Dataset('visits_model'), Dataset('dates_model')],
     start_date=days_ago(1),
     tags=["dbt", "model"],
-    max_active_runs=1
+    max_active_runs=1,
+    on_success_callback=None,
+    on_failure_callback=send_telegram,
 ) as dag:
 
     end_task = EmptyOperator(
