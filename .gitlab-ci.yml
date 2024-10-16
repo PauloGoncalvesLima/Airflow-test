@@ -47,7 +47,7 @@ lint-ruff:
 
 lint-black:
   stage: lint
-  <<: *default_linut_rule_python
+  <<: *default_lint_rule_python
   script:
     - pip install black
     - black . --check --verbose --color
