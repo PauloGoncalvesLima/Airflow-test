@@ -113,7 +113,7 @@ sonarcloud-check:
     name: sonarsource/sonar-scanner-cli:latest
     entrypoint: [""]
   rules:
-    - if: $CI_COMMIT_BRANCH == 'main'
+    - if: $CI_COMMIT_BRANCH == 'main' && $GITLAB_USER_ID == '21473585'
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
   inherit:
     default: false
@@ -166,6 +166,8 @@ process_manifest:
   stage: generate_dbt_dag
   image: python:3.9
   <<: *default_rule_dbt
+  inherit:
+    default: false
   script:
     - python $PYTHON_SCRIPT --manifest_path $DBT_PROJECT_DIR/target/manifest.json --project_path $AIRFLOW_DBT_PROJECT_DIR --profile_path $AIRFLOW_DBT_PROFILE_DIR --dag_folder_path dbt/
   artifacts:
@@ -176,6 +178,8 @@ commit_generated_file:
   stage: commit_dbt_dag
   image: python:3.9
   <<: *default_rule_dbt
+  inherit:
+    default: false
   script:
     - git config --global user.email "$GIT_CI_EMAIL"
     - git config --global user.name "$GIT_CI_USER"
@@ -190,6 +194,8 @@ commit_generated_file:
 pages:
   image: python:3.9
   stage: deploy
+  inherit:
+    default: false
   <<: *setup_dbt
   rules:
     - if: $CI_COMMIT_BRANCH == 'main' && $GITLAB_USER_ID == '21473585'
