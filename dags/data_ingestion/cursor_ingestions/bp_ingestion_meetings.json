@@ -1,0 +1,80 @@
+{
+  "name": "bp_meetings",
+  "origin_db_connection": "bp_replica",
+  "destination_db_connection": "pg_bp_analytics",
+  "catchup": false,
+  "schedule_interval": "0 5 * * *",
+  "start_date": "2024-08-10",
+  "extractions": {
+    "decidim_meetings_answer_choices": {
+      "extraction_schema": "public",
+      "ingestion_type": "full_refresh",
+      "destination_schema": "raw"
+    },
+    "decidim_meetings_answer_options": {
+      "extraction_schema": "public",
+      "ingestion_type": "full_refresh",
+      "destination_schema": "raw"
+    },
+    "decidim_meetings_agenda_items": {
+      "extraction_schema": "public",
+      "ingestion_type": "incremental",
+      "incremental_filter": "updated_at >= '{{ macros.ds_add(ds, -1) }}' and updated_at < '{{ macros.ds_add(ds, 2) }}'",
+      "destination_schema": "raw"
+    },
+    "decidim_meetings_agendas": {
+      "extraction_schema": "public",
+      "ingestion_type": "incremental",
+      "incremental_filter": "updated_at >= '{{ macros.ds_add(ds, -1) }}' and updated_at < '{{ macros.ds_add(ds, 2) }}'",
+      "destination_schema": "raw"
+    },
+    "decidim_meetings_answers": {
+      "extraction_schema": "public",
+      "ingestion_type": "incremental",
+      "incremental_filter": "updated_at >= '{{ macros.ds_add(ds, -1) }}' and updated_at < '{{ macros.ds_add(ds, 2) }}'",
+      "destination_schema": "raw"
+    },
+    "decidim_meetings_invites": {
+      "extraction_schema": "public",
+      "ingestion_type": "incremental",
+      "incremental_filter": "updated_at >= '{{ macros.ds_add(ds, -1) }}' and updated_at < '{{ macros.ds_add(ds, 2) }}'",
+      "destination_schema": "raw"
+    },
+    "decidim_meetings_meetings": {
+      "extraction_schema": "public",
+      "ingestion_type": "incremental",
+      "incremental_filter": "updated_at >= '{{ macros.ds_add(ds, -1) }}' and updated_at < '{{ macros.ds_add(ds, 2) }}'",
+      "destination_schema": "raw"
+    },
+    "decidim_meetings_polls": {
+      "extraction_schema": "public",
+      "ingestion_type": "incremental",
+      "incremental_filter": "updated_at >= '{{ macros.ds_add(ds, -1) }}' and updated_at < '{{ macros.ds_add(ds, 2) }}'",
+      "destination_schema": "raw"
+    },
+    "decidim_meetings_questionnaires": {
+      "extraction_schema": "public",
+      "ingestion_type": "incremental",
+      "incremental_filter": "updated_at >= '{{ macros.ds_add(ds, -1) }}' and updated_at < '{{ macros.ds_add(ds, 2) }}'",
+      "destination_schema": "raw"
+    },
+    "decidim_meetings_questions": {
+      "extraction_schema": "public",
+      "ingestion_type": "incremental",
+      "incremental_filter": "updated_at >= '{{ macros.ds_add(ds, -1) }}' and updated_at < '{{ macros.ds_add(ds, 2) }}'",
+      "destination_schema": "raw"
+    },
+    "decidim_meetings_registrations": {
+      "extraction_schema": "public",
+      "ingestion_type": "incremental",
+      "incremental_filter": "updated_at >= '{{ macros.ds_add(ds, -1) }}' and updated_at < '{{ macros.ds_add(ds, 2) }}'",
+      "destination_schema": "raw"
+    },
+    "decidim_meetings_services": {
+      "extraction_schema": "public",
+      "ingestion_type": "incremental",
+      "incremental_filter": "updated_at >= '{{ macros.ds_add(ds, -1) }}' and updated_at < '{{ macros.ds_add(ds, 2) }}'",
+      "destination_schema": "raw"
+    }
+  }
+}
