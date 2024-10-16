@@ -126,7 +126,7 @@ models:
           - referential_integrity_test:
               parent_model: users
               parent_column: user_id
-  - name: datas
+  - name: dates
     description: "Tabela de datas com a flag de feriado nacional e suas informações detalhadas."
     columns:
       - name: ano_mes_dia
