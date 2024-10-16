@@ -51,7 +51,7 @@ TABLE_HOLIDAYS_NAME = "holidays"
 
 
 @dag(
-    schedule_interval="@monthly",
+    schedule_interval="@daily",
     start_date=datetime(2024, 1, 1),
     catchup=False,
     tags=["data-ingestion"],
