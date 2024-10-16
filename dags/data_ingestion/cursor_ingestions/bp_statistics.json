@@ -1,0 +1,20 @@
+{
+  "name": "bp_statistics",
+  "origin_db_connection": "bp_replica",
+  "destination_db_connection": "pg_bp_analytics",
+  "catchup": false,
+  "start_date": "2024-08-10",
+  "schedule_interval": "0 3 * * *",
+  "extractions": {
+    "decidim_govbr_user_proposals_statistics": {
+      "extraction_schema": "public",
+      "ingestion_type": "incremental",
+      "incremental_filter": "updated_at >= '{{ macros.ds_add(ds, -1) }}' and updated_at < '{{ macros.ds_add(ds, 2) }}'",
+      "destination_schema": "raw",
+      "exclude_columns": [
+        "decidim_user_name",
+        "decidim_user_identification_number"
+      ]
+    }
+  }
+}
