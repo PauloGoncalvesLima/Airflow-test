@@ -76,7 +76,7 @@ lint-markdown:
 
 .default_pytest: &default_pytest
   rules:
-    - if: $CI_COMMIT_BRANCH == 'main' & $GITLAB_USER_ID == '21473585'
+    - if: $CI_COMMIT_BRANCH == 'main' && $GITLAB_USER_ID == '21473585'
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       changes:
         - ./**/*.py
@@ -113,7 +113,7 @@ sonarcloud-check:
     name: sonarsource/sonar-scanner-cli:latest
     entrypoint: [""]
   rules:
-    - if: $CI_COMMIT_BRANCH == 'main' & $GITLAB_USER_ID == '21473585'
+    - if: $CI_COMMIT_BRANCH == 'main' && $GITLAB_USER_ID == '21473585'
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       changes:
         - ./**/*.py
@@ -136,7 +136,7 @@ sonarcloud-check:
 
 .default_rule_dbt: &default_rule_dbt
   rules:
-    - if: $CI_COMMIT_BRANCH == 'main' & $GITLAB_USER_ID != '21473585'
+    - if: $CI_COMMIT_BRANCH == 'main' && $GITLAB_USER_ID != '21473585'
 
 
 .setup_dbt: &setup_dbt
@@ -163,8 +163,6 @@ compile_dbt_project:
   artifacts:
     paths:
       - $DBT_PROJECT_DIR/target/manifest.json
-  only:
-    - main
 
 process_manifest:
   stage: generate_dbt_dag
@@ -196,7 +194,7 @@ pages:
   stage: deploy
   <<: *setup_dbt
   rules:
-    - if: $CI_COMMIT_BRANCH == 'main' & $GITLAB_USER_ID == '21473585'
+    - if: $CI_COMMIT_BRANCH == 'main' && $GITLAB_USER_ID == '21473585'
   script:
     - cd $DBT_PROJECT_DIR
     - dbt deps
