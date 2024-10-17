@@ -1,5 +1,6 @@
 import logging
 
+from airflow.models import Variable
 from airflow.decorators import dag, task
 from airflow.providers.telegram.hooks.telegram import TelegramHook
 from airflow.operators.empty import EmptyOperator
@@ -20,6 +21,7 @@ TELEGRAM_CONN_ID = "telegram_decidim"
 SCHEMA = "public"
 POSTGRES_CONN = "postgres_conn"
 TABLE = 'teste'
+VARIABLE = 'registry_numbers'
 
 @dag(
     tags=['automation', 'telegram', 'notify'],
@@ -38,9 +40,16 @@ def automation_notify_telegram():
         hook = PostgresHook(postgres_conn_id=POSTGRES_CONN)
         connection = hook.get_conn()
         postgres_cursor = connection.cursor()
-        postgres_cursor.execute(f"SELECT COUNT(*) FROM {SCHEMA}.{TABLE};")
-        result = postgres_cursor.fetchone()  # Pega a primeira linha do resultado
-        logging.info(f"TESTANDO CONEXÃO: {result}")
+        postgres_cursor.execute(f"SELECT MAX(id) FROM {SCHEMA}.{TABLE};")
+        result = postgres_cursor.fetchone()
+        result = result[0]
+        
+        count  = Variable.get(VARIABLE, default_var=None)
+
+        if count is None:
+            count = result
+            Variable.set(VARIABLE, count)
+
         return result
 
 
