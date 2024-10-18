@@ -40,15 +40,18 @@ def automation_notify_telegram():
         hook = PostgresHook(postgres_conn_id=POSTGRES_CONN)
         connection = hook.get_conn()
         postgres_cursor = connection.cursor()
-        postgres_cursor.execute(f"SELECT MAX(id) FROM {SCHEMA}.{TABLE};")
-        result = postgres_cursor.fetchone()
-        result = result[0]
-        
-        count  = Variable.get(VARIABLE, default_var=None)
 
-        if count is None:
-            count = result
-            Variable.set(VARIABLE, count)
+        count  = Variable.get(VARIABLE, default_var=0)
+
+        query = f"""
+            SELECT *
+            FROM {SCHEMA}.{TABLE}
+            WHERE id > {count}
+            ORDER BY id DESC;
+        """
+
+        postgres_cursor.execute(query)
+        result = postgres_cursor.fetchall()
 
         return result
 
