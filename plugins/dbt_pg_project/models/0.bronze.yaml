@@ -5,20 +5,815 @@ sources:
     schema: raw
     tables:
       - name: decidim_area_types
+        description: "Tabela que armazena os tipos de áreas definidos no sistema Decidim."
+        columns:
+          - name: id
+            description: "Identificador único do tipo de área."
+          
+          - name: decidim_organization_id
+            description: "Chave estrangeira para a organização à qual o tipo de área pertence."
+
+          - name: name
+            description: "Nome do tipo de área, como apresentado no sistema."
+
+          - name: plural
+            description: "Forma plural do nome do tipo de área, utilizada quando aplicável."
       - name: decidim_areas
+        description: "Tabela que contém as áreas associadas a processos participativos no sistema Decidim."
+        columns:
+          - name: id
+            description: "Identificador único da área."
+
+          - name: name
+            description: "Nome da área no sistema."
+
+          - name: area_type_id
+            description: "Chave estrangeira para a tabela decidim_area_types, indicando o tipo de área."
+
+          - name: decidim_organization_id
+            description: "Chave estrangeira para a organização à qual a área pertence."
+
+          - name: created_at
+            description: "Data e hora em que a área foi criada no sistema."
+
+          - name: updated_at
+            description: "Data e hora da última atualização da área."
       - name: decidim_coauthorships
+        description: "Tabela que armazena informações sobre coautorias de propostas e outros conteúdos no sistema Decidim."
+        columns:
+          - name: id
+            description: "Identificador único da coautoria."
+
+          - name: decidim_author_id
+            description: "Chave estrangeira que identifica o autor principal desta coautoria."
+
+          - name: decidim_user_group_id
+            description: "Chave estrangeira que identifica o grupo de usuários associado à coautoria, se aplicável."
+
+          - name: coauthorable_type
+            description: "Tipo de conteúdo que pode ter coautoria, como uma proposta, comentário ou outro objeto."
+
+          - name: coauthorable_id
+            description: "Identificador do conteúdo específico associado à coautoria (ligado ao coauthorable_type)."
+
+          - name: created_at
+            description: "Data e hora em que a coautoria foi registrada no sistema."
+
+          - name: updated_at
+            description: "Data e hora da última atualização da coautoria no sistema."
+
+          - name: decidim_author_type
+            description: "Tipo do autor associado a essa coautoria, que pode ser um usuário ou grupo de usuários."
       - name: decidim_comments_comment_votes
+        description: "Tabela que armazena os votos em comentários no sistema Decidim."
+        columns:
+          - name: id
+            description: "Identificador único do voto em um comentário."
+
+          - name: weight
+            description: "Peso do voto, que pode variar dependendo das configurações do sistema (por exemplo, votos de diferentes usuários podem ter pesos diferentes)."
+
+          - name: decidim_comment_id
+            description: "Chave estrangeira que identifica o comentário ao qual o voto está associado."
+
+          - name: decidim_author_id
+            description: "Chave estrangeira que identifica o autor do voto."
+
+          - name: created_at
+            description: "Data e hora em que o voto foi registrado no sistema."
+
+          - name: updated_at
+            description: "Data e hora da última atualização do voto."
+
+          - name: decidim_author_type
+            description: "Tipo de autor associado ao voto, que pode ser um usuário individual ou um grupo de usuários."
       - name: decidim_comments_comments
+        description: "Tabela que armazena os comentários feitos no sistema Decidim."
+        columns:
+          - name: id
+            description: "Identificador único do comentário."
+
+          - name: decidim_commentable_type
+            description: "Tipo de conteúdo ao qual o comentário está associado (por exemplo, proposta, post, etc.)."
+
+          - name: decidim_commentable_id
+            description: "Identificador do conteúdo ao qual o comentário está associado."
+
+          - name: decidim_author_id
+            description: "Chave estrangeira que identifica o autor do comentário."
+
+          - name: created_at
+            description: "Data e hora em que o comentário foi criado."
+
+          - name: updated_at
+            description: "Data e hora da última atualização do comentário."
+
+          - name: depth
+            description: "Profundidade do comentário na árvore de comentários (indica se é uma resposta a outro comentário, por exemplo)."
+
+          - name: alignment
+            description: "Posição do comentário dentro do contexto em que foi feito."
+
+          - name: decidim_user_group_id
+            description: "Chave estrangeira para o grupo de usuários, se o comentário foi feito por um grupo."
+
+          - name: decidim_root_commentable_type
+            description: "Tipo do conteúdo raiz ao qual o comentário original está associado."
+
+          - name: decidim_root_commentable_id
+            description: "Identificador do conteúdo raiz ao qual o comentário original está associado."
+
+          - name: decidim_author_type
+            description: "Tipo do autor (usuário individual ou grupo de usuários)."
+
+          - name: body
+            description: "Conteúdo textual do comentário."
+
+          - name: comments_count
+            description: "Número de respostas associadas ao comentário."
+
+          - name: decidim_participatory_space_type
+            description: "Tipo de espaço participativo no qual o comentário foi feito (como uma votação, fórum, etc.)."
+
+          - name: decidim_participatory_space_id
+            description: "Identificador do espaço participativo no qual o comentário foi feito."
+
+          - name: deleted_at
+            description: "Data e hora em que o comentário foi excluído, se aplicável."
+
+          - name: status
+            description: "Estado atual do comentário (0 - Não moderado, 1 - Aprovado, 2 - Recusado)."
       - name: decidim_components
+        description: "Tabela que armazena os componentes usados em espaços participativos no sistema Decidim."
+        columns:
+          - name: id
+            description: "Identificador único do componente."
+
+          - name: manifest_name
+            description: "Nome do manifesto associado ao componente, que define suas características e comportamentos."
+
+          - name: name
+            description: "Nome do componente como exibido no sistema."
+
+          - name: participatory_space_id
+            description: "Chave estrangeira que identifica o espaço participativo ao qual o componente está vinculado."
+
+          - name: settings
+            description: "Configurações específicas do componente, armazenadas em formato JSON ou similar."
+
+          - name: weight
+            description: "Peso ou ordem do componente em relação a outros componentes no espaço participativo, utilizado para ordenação."
+
+          - name: permissions
+            description: "Permissões associadas ao componente, definindo quem pode acessá-lo ou modificá-lo."
+
+          - name: published_at
+            description: "Data e hora em que o componente foi publicado ou ativado no sistema."
+
+          - name: created_at
+            description: "Data e hora em que o componente foi criado no sistema."
+
+          - name: updated_at
+            description: "Data e hora da última atualização do componente."
+
+          - name: participatory_space_type
+            description: "Tipo de espaço participativo ao qual o componente pertence (por exemplo, fórum, consulta, etc.)."
+
+          - name: hide_in_menu
+            description: "Indica se o componente deve ser oculto no menu de navegação (true/false)."
+
+          - name: singular_name
+            description: "Nome singular do componente, utilizado em contextos onde o plural não se aplica."
+
+          - name: menu_name
+            description: "Nome exibido no menu para acessar o componente."
       - name: decidim_participatory_process_types
+        description: "Tabela que armazena os tipos de processos participativos disponíveis no sistema Decidim."
+        columns:
+          - name: id
+            description: "Identificador único do tipo de processo participativo."
+
+          - name: title
+            description: "Título ou nome do tipo de processo participativo."
+
+          - name: decidim_organization_id
+            description: "Chave estrangeira que identifica a organização à qual o tipo de processo participativo pertence."
+
+          - name: created_at
+            description: "Data e hora em que o tipo de processo participativo foi criado no sistema."
+
+          - name: updated_at
+            description: "Data e hora da última atualização do tipo de processo participativo."
       - name: decidim_participatory_processes
+        description: "Tabela que armazena os processos participativos no sistema Decidim."
+        columns:
+          - name: id
+            description: "Identificador único do processo participativo."
+
+          - name: slug
+            description: "Identificador único e legível na URL do processo participativo."
+
+          - name: hashtag
+            description: "Hashtag associada ao processo participativo para mídias sociais."
+
+          - name: decidim_organization_id
+            description: "Chave estrangeira que identifica a organização à qual o processo participativo pertence."
+
+          - name: created_at
+            description: "Data e hora em que o processo participativo foi criado."
+
+          - name: updated_at
+            description: "Data e hora da última atualização do processo participativo."
+
+          - name: title
+            description: "Título do processo participativo."
+
+          - name: subtitle
+            description: "Subtítulo ou descrição breve do processo participativo."
+
+          - name: short_description
+            description: "Descrição curta do processo participativo, usada em exibições rápidas."
+
+          - name: description
+            description: "Descrição completa e detalhada do processo participativo."
+
+          - name: hero_image
+            description: "Imagem principal do processo participativo, usada em sua página de destaque."
+
+          - name: banner_image
+            description: "Imagem de banner exibida no topo da página do processo participativo."
+
+          - name: promoted
+            description: "Indica se o processo participativo está promovido (true/false)."
+
+          - name: published_at
+            description: "Data e hora em que o processo participativo foi publicado."
+
+          - name: developer_group
+            description: "Grupo responsável pelo desenvolvimento ou manutenção do processo participativo."
+
+          - name: end_date
+            description: "Data de término do processo participativo."
+
+          - name: meta_scope
+            description: "Escopo meta do processo participativo (como objetivo ou tema principal)."
+
+          - name: local_area
+            description: "Área geográfica local associada ao processo participativo."
+
+          - name: target
+            description: "Alvo ou objetivo do processo participativo."
+
+          - name: participatory_scope
+            description: "Escopo de participação do processo (por exemplo, local, nacional)."
+
+          - name: participatory_structure
+            description: "Estrutura participativa em que o processo se baseia."
+
+          - name: decidim_scope_id
+            description: "Chave estrangeira que identifica o escopo específico do processo participativo."
+
+          - name: decidim_participatory_process_group_id
+            description: "Chave estrangeira para o grupo de processos participativos ao qual o processo pertence."
+
+          - name: show_statistics
+            description: "Indica se as estatísticas do processo participativo estão visíveis (true/false)."
+
+          - name: announcement
+            description: "Anúncio ou mensagem importante associada ao processo participativo."
+
+          - name: scopes_enabled
+            description: "Indica se os escopos estão habilitados para o processo participativo."
+
+          - name: start_date
+            description: "Data de início do processo participativo."
+
+          - name: private_space
+            description: "Indica se o processo participativo está em um espaço privado (true/false)."
+
+          - name: reference
+            description: "Referência associada ao processo participativo."
+
+          - name: decidim_area_id
+            description: "Chave estrangeira que identifica a área associada ao processo participativo."
+
+          - name: decidim_scope_type_id
+            description: "Chave estrangeira para o tipo de escopo do processo participativo."
+
+          - name: show_metrics
+            description: "Indica se as métricas do processo participativo estão visíveis (true/false)."
+
+          - name: weight
+            description: "Ordem ou peso do processo participativo em relação a outros."
+
+          - name: follows_count
+            description: "Contagem de seguidores do processo participativo."
+
+          - name: decidim_participatory_process_type_id
+            description: "Chave estrangeira que identifica o tipo de processo participativo."
+
+          - name: initial_page_type
+            description: "Tipo de página inicial exibida no processo participativo."
+
+          - name: initial_page_component_id
+            description: "Chave estrangeira para o componente exibido na página inicial."
+
+          - name: group_chat_id
+            description: "Identificador de um chat de grupo associado ao processo participativo."
+
+          - name: should_have_user_full_profile
+            description: "Indica se os participantes precisam ter um perfil completo (true/false)."
+
+          - name: publish_date
+            description: "Data de publicação do processo participativo."
+
+          - name: show_mobilization
+            description: "Indica se a mobilização dos participantes está visível (true/false)."
+
+          - name: is_template
+            description: "Indica se o processo participativo é um modelo para outros (true/false)."
+
+          - name: extra_fields
+            description: "Campos extras personalizados para o processo participativo."
+
+          - name: mobilization_title
+            description: "Título da mobilização associada ao processo participativo."
+
+          - name: mobilization_position
+            description: "Posição da mobilização dentro do processo participativo."
       - name: decidim_proposals_proposal_votes
+        description: "Tabela que armazena os votos associados a propostas no sistema Decidim."
+        columns:
+          - name: id
+            description: "Identificador único do voto em uma proposta."
+
+          - name: decidim_proposal_id
+            description: "Chave estrangeira que identifica a proposta à qual o voto está associado."
+
+          - name: decidim_author_id
+            description: "Chave estrangeira que identifica o autor do voto."
+
+          - name: created_at
+            description: "Data e hora em que o voto foi registrado."
+
+          - name: updated_at
+            description: "Data e hora da última atualização do voto."
+
+          - name: temporary
+            description: "Indica se o voto é temporário (true/false)."
       - name: decidim_proposals_proposals
-      - name: decidim_scope_types
-      - name: decidim_scopes
-      - name: decidim_users
-      - name: matomo_detailed_visits
-      - name: decidim_categorizations
+        description: "Tabela que armazena as propostas criadas no sistema Decidim."
+        columns:
+          - name: id
+            description: "Identificador único da proposta."
+
+          - name: decidim_component_id
+            description: "Chave estrangeira que identifica o componente ao qual a proposta pertence."
+
+          - name: decidim_scope_id
+            description: "Chave estrangeira que identifica o escopo da proposta."
+
+          - name: created_at
+            description: "Data e hora em que a proposta foi criada."
+
+          - name: updated_at
+            description: "Data e hora da última atualização da proposta."
+
+          - name: proposal_votes_count
+            description: "Número total de votos recebidos pela proposta."
+
+          - name: state
+            description: "Estado atual da proposta, que pode ser:
+              - null: Estado não definido.
+              - withdrawn: Proposta retirada.
+              - evaluating: Proposta em avaliação.
+              - not_answered: Proposta não respondida.
+              - rejected: Proposta rejeitada.
+              - partially_accepted: Proposta parcialmente aceita.
+              - accepted: Proposta aceita."
+
+          - name: answered_at
+            description: "Data e hora em que a proposta recebeu uma resposta oficial."
+
+          - name: answer
+            description: "Resposta oficial fornecida para a proposta."
+
+          - name: reference
+            description: "Referência única da proposta dentro do sistema."
+
+          - name: address
+            description: "Endereço associado à proposta, se aplicável."
+
+          - name: latitude
+            description: "Latitude geográfica associada ao endereço da proposta."
+
+          - name: longitude
+            description: "Longitude geográfica associada ao endereço da proposta."
+
+          - name: published_at
+            description: "Data e hora em que a proposta foi publicada no sistema."
+
+          - name: proposal_notes_count
+            description: "Número de notas associadas à proposta."
+
+          - name: coauthorships_count
+            description: "Número de coautorias associadas à proposta."
+
+          - name: participatory_text_level
+            description: "Nível de texto participativo da proposta (se relacionado a um documento participativo)."
+
+          - name: position
+            description: "Posição da proposta no contexto em que ela foi criada."
+
+          - name: created_in_meeting
+            description: "Indica se a proposta foi criada durante uma reunião (true/false)."
+
+          - name: cost
+            description: "Custo estimado para implementar a proposta, se aplicável."
+
+          - name: cost_report
+            description: "Relatório de custo associado à proposta."
+
+          - name: execution_period
+            description: "Período estimado para execução da proposta."
+
+          - name: state_published_at
+            description: "Data e hora em que o estado atual da proposta foi publicado."
+
+          - name: endorsements_count
+            description: "Número total de endossos que a proposta recebeu."
+
+          - name: title
+            description: "Título da proposta."
+
+          - name: body
+            description: "Corpo ou descrição detalhada da proposta."
+
+          - name: comments_count
+            description: "Número de comentários recebidos pela proposta."
+
+          - name: follows_count
+            description: "Número de seguidores da proposta."
+
+          - name: is_interactive
+            description: "Indica se a proposta é interativa (true/false)."
+
+          - name: badge_array
+            description: "Lista de badges ou distintivos associados à proposta."
+      - name: dates
+        description: "Tabela de referência de datas, usada para construir dimensões de tempo."
+        columns:
+          - name: day_of_month
+            description: "Dia do mês (1-31)."
+          - name: day_of_week
+            description: "Dia da semana como número (1 para domingo, 7 para sábado)."
+          - name: day_of_year
+            description: "Dia do ano (1-365 ou 1-366 para anos bissextos)."
+          - name: month_description
+            description: "Nome do mês (por exemplo, Janeiro, Fevereiro)."
+          - name: month_number
+            description: "Número do mês (1-12)."
+          - name: week_day_description
+            description: "Nome do dia da semana (por exemplo, Segunda-feira)."
+          - name: weekend
+            description: "Indica se o dia é fim de semana (true/false)."
+          - name: week_of_month
+            description: "Número da semana dentro do mês."
+          - name: week_of_year
+            description: "Número da semana no ano (1-52/53)."
+          - name: year
+            description: "Ano (por exemplo, 2021)."
+          - name: year_month
+            description: "Combinação de ano e mês (por exemplo, 2021-01)."
+          - name: year_month_day
+            description: "Data completa no formato YYYY-MM-DD."
+      
       - name: decidim_categories
-      - name: dates 
+        description: "Tabela que armazena as categorias usadas para classificar conteúdos no sistema Decidim."
+        columns:
+          - name: id
+            description: "Identificador único da categoria."
+          - name: name
+            description: "Nome da categoria."
+          - name: description
+            description: "Descrição detalhada da categoria."
+          - name: decidim_participatory_space_id
+            description: "Chave estrangeira que identifica o espaço participativo ao qual a categoria pertence."
+          - name: decidim_participatory_space_type
+            description: "Tipo de espaço participativo associado à categoria (por exemplo, processo, assembleia)."
+          - name: parent_id
+            description: "Chave estrangeira para a categoria pai, se aplicável."
+          - name: weight
+            description: "Peso ou ordem da categoria para fins de ordenação."
+
+      - name: decidim_categorizations
+        description: "Tabela que relaciona conteúdos a categorias no sistema Decidim."
+        columns:
+          - name: id
+            description: "Identificador único da categorização."
+          - name: categorizable_id
+            description: "Identificador do conteúdo categorizável."
+          - name: categorizable_type
+            description: "Tipo de conteúdo categorizável (por exemplo, proposta, comentário)."
+          - name: decidim_category_id
+            description: "Chave estrangeira que identifica a categoria associada."
+          - name: created_at
+            description: "Data e hora em que a categorização foi criada."
+          - name: updated_at
+            description: "Data e hora da última atualização da categorização."
+
+      - name: decidim_scopes
+        description: "Tabela que armazena os escopos geográficos ou temáticos no sistema Decidim."
+        columns:
+          - name: id
+            description: "Identificador único do escopo."
+          - name: name
+            description: "Nome do escopo."
+          - name: code
+            description: "Código único associado ao escopo."
+          - name: decidim_organization_id
+            description: "Chave estrangeira que identifica a organização à qual o escopo pertence."
+          - name: parent_id
+            description: "Chave estrangeira para o escopo pai, se aplicável."
+          - name: part_of
+            description: "Indicação se o escopo faz parte de outro escopo."
+          - name: scope_type_id
+            description: "Chave estrangeira para o tipo de escopo."
+          - name: created_at
+            description: "Data e hora em que o escopo foi criado."
+          - name: updated_at
+            description: "Data e hora da última atualização do escopo."
+
+      - name: decidim_scope_types
+        description: "Tabela que armazena os tipos de escopos no sistema Decidim."
+        columns:
+          - name: id
+            description: "Identificador único do tipo de escopo."
+          - name: name
+            description: "Nome do tipo de escopo."
+          - name: plural
+            description: "Nome plural do tipo de escopo."
+          - name: decidim_organization_id
+            description: "Chave estrangeira que identifica a organização à qual o tipo de escopo pertence."
+
+      - name: decidim_users
+        description: "Tabela que armazena os usuários registrados no sistema Decidim."
+        columns:
+          - name: id
+            description: "Identificador único do usuário."
+          - name: name
+            description: "Nome completo do usuário."
+          - name: nickname
+            description: "Apelido ou nome de usuário."
+          - name: email
+            description: "Endereço de e-mail do usuário."
+          - name: encrypted_password
+            description: "Senha criptografada do usuário."
+          - name: admin
+            description: "Indica se o usuário é um administrador (true/false)."
+          - name: confirmed_at
+            description: "Data e hora em que o usuário confirmou sua conta."
+          - name: confirmation_token
+            description: "Token usado para confirmar a conta do usuário."
+          - name: created_at
+            description: "Data e hora em que o usuário foi criado."
+          - name: updated_at
+            description: "Data e hora da última atualização do usuário."
+          - name: avatar
+            description: "URL ou referência ao avatar do usuário."
+          - name: about
+            description: "Breve descrição ou biografia do usuário."
+          - name: locale
+            description: "Idioma preferido do usuário."
+          - name: blocked
+            description: "Indica se o usuário está bloqueado (true/false)."
+          - name: blocked_at
+            description: "Data e hora em que o usuário foi bloqueado."
+          - name: deleted_at
+            description: "Data e hora em que o usuário foi excluído."
+          - name: sign_in_count
+            description: "Número de vezes que o usuário fez login."
+          - name: last_sign_in_at
+            description: "Data e hora do último login."
+          - name: current_sign_in_at
+            description: "Data e hora do login atual."
+          - name: last_sign_in_ip
+            description: "Endereço IP do último login."
+          - name: current_sign_in_ip
+            description: "Endereço IP do login atual."
+          - name: failed_attempts
+            description: "Número de tentativas de login falhas."
+          - name: unlock_token
+            description: "Token usado para desbloquear a conta."
+          - name: locked_at
+            description: "Data e hora em que a conta foi bloqueada."
+          - name: reset_password_token
+            description: "Token usado para redefinir a senha."
+          - name: reset_password_sent_at
+            description: "Data e hora em que o e-mail de redefinição de senha foi enviado."
+          - name: remember_created_at
+            description: "Data e hora em que a opção 'lembrar de mim' foi ativada."
+          - name: roles
+            description: "Lista de papéis ou funções atribuídas ao usuário."
+          - name: decidim_organization_id
+            description: "Chave estrangeira que identifica a organização à qual o usuário pertence."
+          - name: admin_terms_accepted_at
+            description: "Data e hora em que o usuário aceitou os termos de administrador."
+          - name: accepted_tos_version
+            description: "Versão dos termos de serviço que o usuário aceitou."
+          - name: needs_entity_fields
+            description: "Indica se o usuário precisa preencher campos adicionais de entidade (true/false)."
+          - name: newsletter_token
+            description: "Token associado ao recebimento de newsletter."
+          - name: user_profile_poll_answered
+            description: "Indica se o usuário respondeu à pesquisa de perfil (true/false)."
+          - name: notification_settings
+            description: "Configurações de notificação do usuário."
+          - name: notification_types
+            description: "Tipos de notificações que o usuário recebe."
+          - name: follows_count
+            description: "Número de itens que o usuário está seguindo."
+          - name: followers_count
+            description: "Número de seguidores do usuário."
+          - name: personal_url
+            description: "URL pessoal do usuário, como um site."
+          - name: managed
+            description: "Indica se o usuário é gerenciado (true/false)."
+          - name: type
+            description: "Tipo do usuário (por exemplo, User, AdminUser)."
+          # Você pode continuar adicionando as outras colunas conforme necessário.
+
       - name: holidays
+        description: "Tabela que contém informações sobre feriados."
+        columns:
+          - name: date
+            description: "Data do feriado."
+          - name: name
+            description: "Nome do feriado."
+          - name: type
+            description: "Tipo do feriado (por exemplo, nacional, estadual, municipal)."
+
+      - name: matomo_detailed_visits
+        description: "Tabela que armazena detalhes das visitas coletadas pelo sistema Matomo Analytics."
+        columns:
+          - name: idVisit
+            description: "Identificador único da visita."
+          - name: idSite
+            description: "Identificador do site no Matomo ao qual a visita pertence."
+          - name: visitorId
+            description: "Identificador único do visitante."
+          - name: visitIp
+            description: "Endereço IP do visitante."
+          - name: visitCount
+            description: "Número de vezes que o visitante retornou ao site."
+          - name: visitConverted
+            description: "Indica se a visita resultou em uma conversão (1) ou não (0)."
+          - name: visitConvertedIcon
+            description: "Ícone representando a conversão da visita."
+          - name: visitDuration
+            description: "Duração da visita em segundos."
+          - name: visitDurationPretty
+            description: "Duração da visita em formato legível (por exemplo, '5 min 10 s')."
+          - name: visitServerHour
+            description: "Hora do servidor no momento da visita."
+          - name: lastActionTimestamp
+            description: "Timestamp da última ação do visitante."
+          - name: lastActionDateTime
+            description: "Data e hora da última ação do visitante."
+          - name: firstActionTimestamp
+            description: "Timestamp da primeira ação do visitante."
+          - name: actions
+            description: "Número total de ações (visualizações de página, downloads, etc.) durante a visita."
+          - name: interactions
+            description: "Número de interações do visitante."
+          - name: searches
+            description: "Número de buscas internas realizadas pelo visitante."
+          - name: events
+            description: "Número de eventos registrados durante a visita."
+          - name: goalConversions
+            description: "Número de conversões de metas alcançadas durante a visita."
+          - name: siteName
+            description: "Nome do site no Matomo."
+          - name: siteCurrency
+            description: "Moeda do site (por exemplo, 'USD')."
+          - name: siteCurrencySymbol
+            description: "Símbolo da moeda do site (por exemplo, '$')."
+          - name: serverDate
+            description: "Data do servidor no formato 'YYYY-MM-DD'."
+          - name: serverTimestamp
+            description: "Timestamp do servidor no momento da visita."
+          - name: operatingSystem
+            description: "Sistema operacional do visitante."
+          - name: operatingSystemName
+            description: "Nome completo do sistema operacional."
+          - name: operatingSystemIcon
+            description: "Ícone representando o sistema operacional."
+          - name: operatingSystemCode
+            description: "Código abreviado do sistema operacional."
+          - name: operatingSystemVersion
+            description: "Versão do sistema operacional."
+          - name: browser
+            description: "Navegador utilizado pelo visitante."
+          - name: browserName
+            description: "Nome completo do navegador."
+          - name: browserCode
+            description: "Código abreviado do navegador."
+          - name: browserVersion
+            description: "Versão do navegador."
+          - name: browserIcon
+            description: "Ícone representando o navegador."
+          - name: browserFamily
+            description: "Família do navegador."
+          - name: browserFamilyDescription
+            description: "Descrição da família do navegador."
+          - name: deviceType
+            description: "Tipo de dispositivo (por exemplo, desktop, smartphone)."
+          - name: deviceTypeIcon
+            description: "Ícone representando o tipo de dispositivo."
+          - name: deviceBrand
+            description: "Marca do dispositivo."
+          - name: deviceModel
+            description: "Modelo do dispositivo."
+          - name: resolution
+            description: "Resolução da tela do dispositivo."
+          - name: language
+            description: "Idioma preferido do navegador."
+          - name: languageCode
+            description: "Código do idioma (por exemplo, 'pt-BR')."
+          - name: plugins
+            description: "Plugins instalados no navegador do visitante."
+          - name: location
+            description: "Localização geográfica do visitante."
+          - name: country
+            description: "País de origem do visitante."
+          - name: countryCode
+            description: "Código do país (ISO)."
+          - name: countryFlag
+            description: "URL da imagem da bandeira do país."
+          - name: region
+            description: "Região ou estado de origem do visitante."
+          - name: regionCode
+            description: "Código da região."
+          - name: city
+            description: "Cidade de origem do visitante."
+          - name: latitude
+            description: "Latitude geográfica."
+          - name: longitude
+            description: "Longitude geográfica."
+          - name: continent
+            description: "Continente de origem do visitante."
+          - name: continentCode
+            description: "Código do continente."
+          - name: referrerType
+            description: "Tipo de referência (por exemplo, site, motor de busca)."
+          - name: referrerTypeName
+            description: "Nome do tipo de referência."
+          - name: referrerName
+            description: "Nome do site de referência."
+          - name: referrerUrl
+            description: "URL do site de referência."
+          - name: referrerKeyword
+            description: "Palavra-chave utilizada no motor de busca."
+          - name: referrerKeywordPosition
+            description: "Posição da palavra-chave no motor de busca."
+          - name: referrerSearchEngineUrl
+            description: "URL do motor de busca."
+          - name: referrerSearchEngineIcon
+            description: "Ícone do motor de busca."
+          - name: referrerSocialNetworkUrl
+            description: "URL da rede social de referência."
+          - name: referrerSocialNetworkIcon
+            description: "Ícone da rede social de referência."
+          - name: visitorType
+            description: "Tipo de visitante (novo, recorrente)."
+          - name: visitorTypeIcon
+            description: "Ícone representando o tipo de visitante."
+          - name: daysSinceLastVisit
+            description: "Número de dias desde a última visita."
+          - name: daysSinceFirstVisit
+            description: "Número de dias desde a primeira visita."
+          - name: daysSinceLastEcommerceOrder
+            description: "Número de dias desde o último pedido de e-commerce."
+          - name: secondsSinceLastVisit
+            description: "Número de segundos desde a última visita."
+          - name: secondsSinceFirstVisit
+            description: "Número de segundos desde a primeira visita."
+          - name: secondsSinceLastEcommerceOrder
+            description: "Número de segundos desde o último pedido de e-commerce."
+          - name: userId
+            description: "ID do usuário, se autenticado."
+          - name: fingerprint
+            description: "Impressão digital única do visitante."
+          - name: actionDetails
+            description: "Detalhes das ações realizadas pelo visitante."
+          - name: truncatedActionsCount
+            description: "Contagem de ações truncadas devido a limites."
+          - name: visitEcommerceStatus
+            description: "Status da visita em relação ao e-commerce."
+          - name: visitEcommerceStatusIcon
+            description: "Ícone representando o status do e-commerce."
+          - name: visitLocalTime
+            description: "Hora local do visitante no momento da visita."
+          - name: visitLocalHour
+            description: "Hora local (apenas a hora) do visitante."
+

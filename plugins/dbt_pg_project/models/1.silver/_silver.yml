@@ -1,3 +1,4 @@
+
 version: 2
 models:
   - name: users
@@ -12,7 +13,24 @@ models:
               source_name: bronze
               source_table: decidim_users
               origin_column: id
+      - name: username
+        description: "The display name chosen by the user, used for identification within the platform."
 
+      - name: user_email
+        description: "The email address associated with the user, used for communication and account management."
+
+      - name: created_at
+        description: "The timestamp indicating when the user account was created."
+
+      - name: updated_at
+        description: "The timestamp indicating when the user account was last updated."
+
+      - name: last_activity_at
+        description: "The timestamp of the user's most recent sign-in, representing their last activity on the platform."
+
+      - name: user_roles
+        description: "A JSON array detailing the roles assigned to the user, defining their permissions and access levels within the system."
+      
   - name: participatory_processes
     description: "A table containing data on participatory processes, including unique identifiers for each process."
     columns:
@@ -26,6 +44,51 @@ models:
               source_table: decidim_participatory_processes
               origin_column: id
 
+      - name: process_type
+        description: "The type of the participatory process (e.g., 'consultation', 'deliberation')."
+
+      - name: process_slug
+        description: "A URL-friendly identifier for the participatory process, used in web addresses."
+
+      - name: process_title
+        description: "The title of the participatory process, providing a brief overview of its purpose."
+
+      - name: process_subtitle
+        description: "A subtitle for the participatory process, offering additional context or details."
+
+      - name: description
+        description: "A detailed description of the participatory process, outlining its objectives and scope."
+
+      - name: short_description
+        description: "A concise description of the participatory process, suitable for summaries or previews."
+
+      - name: responsible_area
+        description: "The name of the area responsible for managing the participatory process."
+
+      - name: responsible_type
+        description: "The type of the responsible area, indicating its role or function within the organization."
+
+      - name: created_at
+        description: "The timestamp indicating when the participatory process was created."
+
+      - name: updated_at
+        description: "The timestamp indicating when the participatory process was last updated."
+
+      - name: published_at
+        description: "The timestamp indicating when the participatory process was published and became active."
+
+      - name: start_date
+        description: "The date when the participatory process officially starts."
+
+      - name: end_date
+        description: "The date when the participatory process concludes."
+
+      - name: reference
+        description: "A reference identifier or code associated with the participatory process for tracking purposes."
+
+      - name: follows_count
+        description: "The number of users who are following or have subscribed to updates for the participatory process."
+      
   - name: proposals
     description: "A table containing data on proposals within participatory processes."
     columns:
@@ -52,6 +115,30 @@ models:
           - referential_integrity_test:
               parent_model: users
               parent_column: user_id
+
+      - name: participatory_space_type
+        description: "The type of participatory space to which the proposal is associated (e.g., 'Decidim::ParticipatoryProcess')."
+
+      - name: author_type
+        description: "The type of author who created the proposal, indicating whether it is an individual user, a group, or another entity."
+
+      - name: proposal_status
+        description: "The current status of the proposal (e.g., 'draft', 'published', 'closed'), reflecting its stage in the participatory process."
+
+      - name: created_at
+        description: "The timestamp indicating when the proposal was created."
+
+      - name: proposal_title
+        description: "The title of the proposal in Portuguese (pt-BR), providing a concise overview of its purpose."
+
+      - name: proposal_text
+        description: "The detailed textual content of the proposal in Portuguese (pt-BR), explaining its motivations and objectives."
+
+      - name: proposal_scope
+        description: "The scope of the proposal in Portuguese (pt-BR), defining the specific area or theme to which the proposal relates."
+
+      - name: proposal_category
+        description: "The category of the proposal in Portuguese (pt-BR), classifying it within a predefined thematic structure."
 
   - name: comments
     description: "A table containing data on comments within participatory processes."
@@ -85,6 +172,27 @@ models:
           - referential_integrity_test:
               parent_model: users
               parent_column: user_id
+              
+      - name: component_type
+        description: "The type of component that the comment is associated with (e.g., 'proposal', 'comment')."
+
+      - name: root_component_type
+        description: "The root type of the component that the comment is ultimately associated with."
+
+      - name: commented_root_component_id
+        description: "The identifier of the root component that the comment is ultimately associated with."
+
+      - name: comment_text
+        description: "The text content of the comment in Portuguese (pt-BR)."
+
+      - name: created_at
+        description: "The timestamp when the comment was created."
+
+      - name: updated_at
+        description: "The timestamp when the comment was last updated."
+
+      - name: deleted_at
+        description: "The timestamp when the comment was deleted, if applicable."
 
   - name: votes
     description: "A table containing data on votes within participatory processes."
@@ -126,6 +234,180 @@ models:
           - referential_integrity_test:
               parent_model: users
               parent_column: user_id
+      - name: component_type
+        description: "O tipo de componente ao qual o voto está associado (por exemplo, 'proposal' ou 'comment')."
+
+      - name: created_at
+        description: "O timestamp quando o voto foi criado."
+
+  - name: visits
+    description: "Uma tabela contendo dados sobre visitas ao site, incluindo informações detalhadas sobre sessões de usuários e interações."
+    columns:
+      - name: process_id
+        description: "O identificador único do processo participativo associado à visita."
+
+      - name: participatory_process_slug
+        description: "O slug (identificador amigável para URLs) do processo participativo associado à visita."
+
+      - name: proposal_id
+        description: "O identificador único da proposta associada à visita, se aplicável."
+
+      - name: session_id
+        description: "O identificador único da sessão de usuário durante a qual a visita ocorreu."
+
+      - name: visit_ip
+        description: "O endereço IP do visitante durante a sessão."
+
+      - name: visitor_id
+        description: "Um identificador anônimo único para o visitante."
+
+      - name: goal_conversions
+        description: "O número de conversões de objetivos durante a visita."
+
+      - name: session_date
+        description: "A data da sessão de visita."
+
+      - name: visit_server_hour
+        description: "A hora do dia (tempo do servidor) em que a visita ocorreu."
+
+      - name: last_action_timestamp
+        description: "O timestamp da última ação na sessão de visita."
+
+      - name: last_action_date_time
+        description: "A data e hora da última ação na sessão de visita."
+
+      - name: server_timestamp
+        description: "O timestamp registrado pelo servidor para a visita."
+
+      - name: first_action_timestamp
+        description: "O timestamp da primeira ação na sessão de visita."
+
+      - name: user_id
+        description: "O identificador do usuário logado, se disponível."
+
+      - name: visitor_type
+        description: "O tipo de visitante, por exemplo, 'novo' ou 'recorrente'."
+
+      - name: visit_converted
+        description: "Um booleano indicando se a visita resultou em uma conversão."
+
+      - name: visit_count
+        description: "O número total de visitas feitas pelo visitante."
+
+      - name: days_since_first_visit
+        description: "O número de dias desde a primeira visita do visitante."
+
+      - name: seconds_since_first_visit
+        description: "O número de segundos desde a primeira visita do visitante."
+
+      - name: visit_duration_seconds
+        description: "A duração da visita em segundos."
+
+      - name: searches
+        description: "O número de pesquisas realizadas durante a visita."
+
+      - name: events
+        description: "O número de eventos registrados durante a visita."
+
+      - name: continent
+        description: "O continente de onde a visita se originou."
+
+      - name: continent_code
+        description: "O código representando o continente de onde a visita se originou."
+
+      - name: country
+        description: "O país de onde a visita se originou."
+
+      - name: country_code
+        description: "O código representando o país de onde a visita se originou."
+
+      - name: region
+        description: "A região ou estado de onde a visita se originou."
+
+      - name: device_type
+        description: "O tipo de dispositivo usado durante a visita, por exemplo, 'desktop', 'tablet', 'mobile'."
+
+      - name: region_code
+        description: "O código representando a região de onde a visita se originou."
+
+      - name: city
+        description: "A cidade de onde a visita se originou."
+
+      - name: location
+        description: "A localização geográfica do visitante."
+
+      - name: visit_local_hour
+        description: "A hora local do visitante no momento da visita."
+
+      - name: days_since_last_visit
+        description: "O número de dias desde a última visita do visitante."
+
+      - name: seconds_since_last_visit
+        description: "O número de segundos desde a última visita do visitante."
+
+      - name: resolution
+        description: "A resolução da tela do dispositivo usado durante a visita."
+
+      - name: num_actions
+        description: "O número total de ações (visualizações de página, eventos) durante a visita."
+
+      - name: referrer_type
+        description: "O tipo de referenciador, por exemplo, 'motor de busca', 'site', 'direto'."
+
+      - name: referrer_type_name
+        description: "Um nome descritivo para o tipo de referenciador."
+
+      - name: referrer_name
+        description: "O nome do referenciador, por exemplo, 'Google', 'Facebook'."
+
+      - name: referrer_url
+        description: "A URL do referenciador."
+
+      - name: type
+        description: "O tipo de ação, por exemplo, 'visualização de página', 'evento'."
+
+      - name: url
+        description: "A URL visitada durante a ação."
+
+      - name: page_title
+        description: "O título da página visitada."
+
+      - name: visit_id
+        description: "O identificador da ação de visita."
+
+      - name: id_page_view
+        description: "O identificador único da visualização de página."
+
+      - name: server_time_pretty
+        description: "Uma string formatada do tempo do servidor durante a ação."
+
+      - name: page_id
+        description: "O identificador da página."
+
+      - name: bandwidth
+        description: "A largura de banda usada durante a ação."
+
+      - name: time_spent
+        description: "O tempo gasto na página em segundos."
+
+      - name: time_spent_pretty
+        description: "Uma string formatada do tempo gasto na página."
+
+      - name: page_view_position
+        description: "A posição da visualização de página dentro da visita."
+
+      - name: title
+        description: "O título associado à ação."
+
+      - name: subtitle
+        description: "O subtítulo associado à ação."
+
+      - name: visit_timestamp
+        description: "O timestamp da ação de visita."
+
+      - name: bandwidth_pretty
+        description: "Uma string formatada da largura de banda usada."
+
   - name: datas
     description: "Tabela de datas com a flag de feriado nacional e suas informações detalhadas."
     columns:
@@ -185,3 +467,4 @@ models:
       - name: feriado_nacional
         description: "Nome do feriado nacional, caso seja feriado."
         tests: []
+
