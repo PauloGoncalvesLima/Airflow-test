@@ -31,11 +31,12 @@ for entry in os.scandir(Path(__file__).parent.joinpath("./cursor_ingestions")):
     extractions: dict = dag_config["extractions"]
     catchup: bool = dag_config["catchup"]
     start_date: str = datetime.strptime(dag_config["start_date"], "%Y-%m-%d")
+    schedule_interval: str = dag_config.get("schedule_interval", "0 4 * * *")
 
     @dag(
         dag_id=f"{dag_name}_postgres_cursor_ingestion",
         default_args=default_args,
-        schedule_interval="0 4 * * *",
+        schedule_interval=schedule_interval,
         start_date=start_date,
         tags=["ingestion", dag_name],
         catchup=catchup,

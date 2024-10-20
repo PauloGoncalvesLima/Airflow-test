@@ -20,6 +20,12 @@
       "ingestion_type": "full_refresh",
       "destination_schema": "raw"
     },
+    "decidim_pages_pages": {
+      "extraction_schema": "public",
+      "ingestion_type": "incremental",
+      "incremental_filter": "updated_at >= '{{ macros.ds_add(ds, -1) }}' and updated_at < '{{ macros.ds_add(ds, 2) }}'",
+      "destination_schema": "raw"
+    },
     "decidim_components": {
       "extraction_schema": "public",
       "ingestion_type": "incremental",
