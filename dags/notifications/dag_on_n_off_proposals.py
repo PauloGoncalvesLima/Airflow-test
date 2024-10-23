@@ -37,8 +37,102 @@ from requests.exceptions import HTTPError
 
 from plugins.graphql.hooks.graphql_hook import GraphQLHook
 
+import logging
+from contextlib import closing
+from os import walk
+from pathlib import Path
+from typing import Any, Dict, Generator, Optional, Union
+from urllib.parse import urljoin
+
+import requests
+from airflow.hooks.base import BaseHook
+from airflow.models.connection import Connection
+
+from plugins.utils.dict_utils import key_lookup
+
 DECIDIM_CONN_ID = "api_decidim"
 PAGE_FORM_CLASS = "form edit_component"
+
+
+
+class GraphQLHook(BaseHook):
+    """Uma classe para autenticação com uma API GraphQL usando o Apache Airflow.
+
+    Esta classe, GraphQLHook, estende a classe BaseHook e fornece métodos para executar consultas GraphQL.
+
+    Args:
+    ----
+        conn_id (str): O ID de conexão usado para autenticação.
+        api_url (str): A URL base para a API GraphQL.
+        auth_url (str): A URL para autenticação na API GraphQL.
+        payload (dict): O payload contendo o email e a senha do usuário para autenticação.
+
+    Methods:
+    -------
+        __init__(self, conn_id: str):
+            Inicializa a instância GraphQLHook.
+
+        get_graphql_query_from_file(self, path_para_arquivo_query: Union[Path, str]) -> str:
+            Lê e retorna o conteúdo de um arquivo de consulta GraphQL.
+
+        get_session(self) -> requests.Session:
+            Cria uma sessão autenticada com as credenciais de usuário fornecidas.
+
+        run_graphql_query(
+            self, graphql_query: str, variables: Optional[Dict[str, Any]] = None
+        ) -> Dict[str, str]:
+            Executa uma consulta GraphQL e retorna a resposta em JSON.
+
+        run_graphql_paginated_query(
+            self,
+            paginated_query: str,
+            component_type: Optional[str] = None,
+            variables: Optional[Dict[str, Any]] = None
+        ) -> Generator[Dict[str, Any], None, None]:
+            Executa uma consulta GraphQL paginada e gera respostas.
+
+        get_components_ids_by_type(self, component_type: str):
+            Obtém todos os IDs de componentes filtrados por tipo.
+    """
+
+    def __init__(self, conn_id: str):
+        """
+        Initializes the GraphQLHook instance.
+
+        Args:
+        ----
+            conn_id (str): The connection ID used for authentication.
+        """
+        assert isinstance(conn_id, str), "Param type of conn_id has to be str"
+
+        conn_values = self.get_connection(conn_id)
+        assert isinstance(conn_values, Connection), "conn_values was not created correctly."
+
+        self.conn_id = conn_id
+        self.api_url = conn_values.host
+        self.auth_url = urljoin(self.api_url, "api/sign_in")
+        self.payload = {
+            "user[email]": conn_values.login,
+            "user[password]": conn_values.password,
+        }
+
+    def get_session(self) -> requests.Session:
+        """
+        Creates a requests session authenticated with the provided user credentials.
+
+        Returns
+        -------
+            requests.Session: Authenticated session object.
+        """
+        session = requests.Session()
+
+        try:
+            r = session.post(self.auth_url, data=self.payload, verify=True)
+            r.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            logging.info("A login error occurred: %s", e)
+            raise e
+        return session
 
 
 def _convert_html_form_to_dict(html_form: bs4.element.Tag) -> defaultdict:
